@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>My Family Tree</string>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="resizeAnchor">
+       <enum>QGraphicsView::AnchorUnderMouse</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>640</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menu_New">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="actionNew_Person"/>
+     <addaction name="actionNew_Relationship"/>
+     <addaction name="actionNew_Tree"/>
+    </widget>
+    <widget class="QMenu" name="menuEdit">
+     <property name="title">
+      <string>Edit</string>
+     </property>
+     <addaction name="actionEdit_Person"/>
+     <addaction name="actionEdit_Relationship"/>
+    </widget>
+    <addaction name="menu_New"/>
+    <addaction name="menuEdit"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Tree"/>
+    <addaction name="actionLoad_Tree"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuTrees">
+    <property name="title">
+     <string>Trees</string>
+    </property>
+    <addaction name="actionDescendants"/>
+    <addaction name="actionHourglass"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionPython"/>
+    <addaction name="actionPyside"/>
+    <addaction name="actionFamily_Tree"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTrees"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_Person">
+   <property name="text">
+    <string>New Person</string>
+   </property>
+  </action>
+  <action name="actionNew_Relationship">
+   <property name="text">
+    <string>New Relationship</string>
+   </property>
+  </action>
+  <action name="actionEdit_Person">
+   <property name="text">
+    <string>Edit Person</string>
+   </property>
+  </action>
+  <action name="actionEdit_Relationship">
+   <property name="text">
+    <string>Edit Relationship</string>
+   </property>
+  </action>
+  <action name="actionSave_Tree">
+   <property name="text">
+    <string>Save Tree</string>
+   </property>
+  </action>
+  <action name="actionLoad_Tree">
+   <property name="text">
+    <string>Load Tree</string>
+   </property>
+  </action>
+  <action name="actionNew_Tree">
+   <property name="text">
+    <string>New Tree</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionDescendants">
+   <property name="text">
+    <string>Descendants</string>
+   </property>
+  </action>
+  <action name="actionHourglass">
+   <property name="text">
+    <string>Hourglass</string>
+   </property>
+  </action>
+  <action name="actionPython">
+   <property name="text">
+    <string>Python</string>
+   </property>
+  </action>
+  <action name="actionPyside">
+   <property name="text">
+    <string>Pyside</string>
+   </property>
+  </action>
+  <action name="actionFamily_Tree">
+   <property name="text">
+    <string>Family Tree</string>
+   </property>
+  </action>
+ </widget>
+ <tabstops>
+  <tabstop>graphicsView</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
