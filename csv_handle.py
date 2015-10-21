@@ -44,7 +44,6 @@ def save(file_name,ppl_list):
 
 if __name__ == '__main__':
     people = load('Family tree test.csv')
-    people['001'].display()
-    print(type(people['001'].imp_flg))
+    people['009'].display()
     
     save('Family 2.csv',people)

@@ -10,6 +10,12 @@
     <height>480</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>My Family Tree</string>
   </property>
@@ -39,51 +45,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <widget class="QMenu" name="menu_New">
-     <property name="title">
-      <string>New</string>
-     </property>
-     <addaction name="actionNew_Person"/>
-     <addaction name="actionNew_Relationship"/>
-     <addaction name="actionNew_Tree"/>
-    </widget>
-    <widget class="QMenu" name="menuEdit">
-     <property name="title">
-      <string>Edit</string>
-     </property>
-     <addaction name="actionEdit_Person"/>
-     <addaction name="actionEdit_Relationship"/>
-    </widget>
-    <addaction name="menu_New"/>
-    <addaction name="menuEdit"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_Tree"/>
-    <addaction name="actionLoad_Tree"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuTrees">
-    <property name="title">
-     <string>Trees</string>
-    </property>
-    <addaction name="actionDescendants"/>
-    <addaction name="actionHourglass"/>
-   </widget>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>About</string>
-    </property>
-    <addaction name="actionPython"/>
-    <addaction name="actionPyside"/>
-    <addaction name="actionFamily_Tree"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuTrees"/>
-   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_Person">

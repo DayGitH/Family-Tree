@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\mainwindow.ui'
 #
-# Created: Tue Dec 23 18:55:00 2014
+# Created: Wed Dec 17 21:45:47 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -31,6 +31,16 @@ class Ui_MainWindow(object):
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 640, 21))
         self.menubar.setObjectName("menubar")
+        self.menuFile = QtGui.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menu_New = QtGui.QMenu(self.menuFile)
+        self.menu_New.setObjectName("menu_New")
+        self.menuEdit = QtGui.QMenu(self.menuFile)
+        self.menuEdit.setObjectName("menuEdit")
+        self.menuTrees = QtGui.QMenu(self.menubar)
+        self.menuTrees.setObjectName("menuTrees")
+        self.menuAbout = QtGui.QMenu(self.menubar)
+        self.menuAbout.setObjectName("menuAbout")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -61,12 +71,37 @@ class Ui_MainWindow(object):
         self.actionPyside.setObjectName("actionPyside")
         self.actionFamily_Tree = QtGui.QAction(MainWindow)
         self.actionFamily_Tree.setObjectName("actionFamily_Tree")
+        self.menu_New.addAction(self.actionNew_Person)
+        self.menu_New.addAction(self.actionNew_Relationship)
+        self.menu_New.addAction(self.actionNew_Tree)
+        self.menuEdit.addAction(self.actionEdit_Person)
+        self.menuEdit.addAction(self.actionEdit_Relationship)
+        self.menuFile.addAction(self.menu_New.menuAction())
+        self.menuFile.addAction(self.menuEdit.menuAction())
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionSave_Tree)
+        self.menuFile.addAction(self.actionLoad_Tree)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionExit)
+        self.menuTrees.addAction(self.actionDescendants)
+        self.menuTrees.addAction(self.actionHourglass)
+        self.menuAbout.addAction(self.actionPython)
+        self.menuAbout.addAction(self.actionPyside)
+        self.menuAbout.addAction(self.actionFamily_Tree)
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuTrees.menuAction())
+        self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "My Family Tree", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_New.setTitle(QtGui.QApplication.translate("MainWindow", "New", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuEdit.setTitle(QtGui.QApplication.translate("MainWindow", "Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuTrees.setTitle(QtGui.QApplication.translate("MainWindow", "Trees", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuAbout.setTitle(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Person.setText(QtGui.QApplication.translate("MainWindow", "New Person", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Relationship.setText(QtGui.QApplication.translate("MainWindow", "New Relationship", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEdit_Person.setText(QtGui.QApplication.translate("MainWindow", "Edit Person", None, QtGui.QApplication.UnicodeUTF8))

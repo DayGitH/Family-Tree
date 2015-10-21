@@ -1,10 +1,5 @@
 from PySide import QtCore, QtGui
 import sys
-import datetime
-
-months = {'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May', 
-          '06':'Jun', '07':'Jul', '08':'Aug', '09':'Sep', '10':'Oct', 
-          '11':'Nov', '12':'Dec'}
 
 class Actor(QtGui.QGraphicsWidget):
     nick_name = ''
@@ -16,25 +11,39 @@ class Actor(QtGui.QGraphicsWidget):
     children = ''
     death = ''
     important = False
-    def __init__(self, nick_name, real_name, gender, bday, age, marital, children, death, important, parent=None):
+    notes = ''
+    def __init__(self, nick_name, real_name, gender, bday, age, marital, children, death, important, notes, parent=None):
         super(Actor, self).__init__(parent)
         self.nick_name = nick_name
         self.real_name = real_name
         self.gender = gender
         self.bday = bday
         self.age = age
-        self.marital = marital
-        self.children = children
+        if marital == ['S000']:
+            self.marital = 'Single'
+        elif marital[-1][0] == 'M':
+            self.marital = 'Married'
+        elif marital[-1][0] == 'W':
+            self.marital = 'Widower' if self.gender == 'M' else ('Widow' if gender == 'F' else '')
+        elif marital[-1][0] == 'D':
+            self.marital = 'Divorced'
+        elif marital[-1][0] == 'E':
+            self.marital = 'Engaged'
+        if children == ['']:
+            self.children = 0
+        else:
+            self.children = len(children)
         self.death = death
         self.important = important
-        
-    
+        self.notes = notes
+
+
     def headerRect(self):
         return QtCore.QRectF(-55,-60,110,35)
-    
+
     def boundingRect(self):
-        return QtCore.QRectF(-60, -60, 120, 120)    
-        
+        return QtCore.QRectF(-60, -60, 120, 120)
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(self.boundingRect())
@@ -75,7 +84,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     scene = QtGui.QGraphicsScene(-350,-350,700,700)
     
-    actor = Actor('Akber','Akber Ali','M','1991-Jan-28', 23,'Single',0,'2051-Jan-28',True)
+    actor = Actor('Akber','Akber Ali','M','1991-Jan-28', 23,'Single',0,'2051-Jan-28',True, '')
     actor.setPos(0,0)
     
     scene.addItem(actor)
