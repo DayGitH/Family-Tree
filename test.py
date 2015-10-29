@@ -174,6 +174,32 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
     def delete_person(self):
         # TODO delete from other people's data as well
         # print(self.)
+        father = self.people[self.key].father_id
+        mother = self.people[self.key].mother_id
+        spouse = self.people[self.key].marriage
+        children = self.people[self.key].children
+
+        if father:
+            self.people[father].children.remove(self.key)
+        if mother:
+            self.people[mother].children.remove(self.key)
+
+        if spouse:
+            for sp in spouse:
+                # print(sp[1:4], self.people[sp[1:4]].marriage)
+                for m in self.people[sp[1:4]].marriage:
+                    if m[1:4] == self.key:
+                        self.people[sp[1:4]].marriage.remove(m)
+                        if self.people[sp[1:4]].marriage == []:
+                            self.people[sp[1:4]].marriage = ['S000']
+
+        if children[0]:
+            print(children)
+            for child in children:
+                if self.people[self.key].gender == 'M':
+                    self.people[child].father_id = ''
+                elif self.people[self.key].gender == 'F':
+                    self.people[child].mother_id = ''
         self.people.pop(self.key)
         self.peoplelist.takeItem(self.peoplelist.row(self.peoplelist.currentItem()))
 
