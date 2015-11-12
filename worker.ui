@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>452</height>
+    <width>727</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,8 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="1">
-     <widget class="QLabel" name="label_6">
+    <item row="5" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_dday">
       <property name="text">
        <string>Death:</string>
       </property>
@@ -43,36 +43,29 @@
       </item>
      </layout>
     </item>
-    <item row="7" column="1">
-     <widget class="QLabel" name="label_8">
+    <item row="7" column="1" alignment="Qt::AlignRight|Qt::AlignTop">
+     <widget class="QLabel" name="label_notes">
       <property name="text">
        <string>Notes:</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="3">
-     <widget class="QLabel" name="label_9">
+    <item row="1" column="3" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_father">
       <property name="text">
        <string>Father:</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="3">
-     <widget class="QLabel" name="label_11">
+    <item row="3" column="3" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_marriage">
       <property name="text">
        <string>Marriage:</string>
       </property>
      </widget>
     </item>
-    <item row="6" column="3">
-     <widget class="QLabel" name="label_12">
-      <property name="text">
-       <string>Children:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="3">
-     <widget class="QLabel" name="label_10">
+    <item row="2" column="3" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_mother">
       <property name="text">
        <string>Mother:</string>
       </property>
@@ -81,22 +74,22 @@
     <item row="3" column="4" rowspan="3">
      <widget class="QListWidget" name="spouselist"/>
     </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="label">
+    <item row="0" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_ID">
       <property name="text">
        <string>ID:</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLabel" name="label_3">
+    <item row="2" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_realname">
       <property name="text">
        <string>Real Name:</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QLabel" name="label_4">
+    <item row="3" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_bday">
       <property name="text">
        <string>Birthday:</string>
       </property>
@@ -112,8 +105,8 @@
     <item row="1" column="2">
      <widget class="QLineEdit" name="nicknameEdit"/>
     </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="label_2">
+    <item row="1" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_nickname">
       <property name="text">
        <string>Spoken Name:</string>
       </property>
@@ -140,8 +133,8 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="1">
-     <widget class="QLabel" name="label_5">
+    <item row="4" column="1" alignment="Qt::AlignRight">
+     <widget class="QLabel" name="label_gender">
       <property name="text">
        <string>Gender:</string>
       </property>
@@ -151,7 +144,7 @@
      <widget class="QLineEdit" name="bdayEdit"/>
     </item>
     <item row="0" column="0">
-     <widget class="QLabel" name="label_7">
+     <widget class="QLabel" name="label_primarylist">
       <property name="text">
        <string>List</string>
       </property>
@@ -169,9 +162,6 @@
     </item>
     <item row="7" column="2" rowspan="2">
      <widget class="QTextEdit" name="notesEdit"/>
-    </item>
-    <item row="6" column="4" rowspan="3">
-     <widget class="QListWidget" name="childrenlist"/>
     </item>
     <item row="1" column="0" rowspan="8">
      <widget class="QListWidget" name="peoplelist">
@@ -197,6 +187,19 @@
       </property>
      </widget>
     </item>
+    <item row="7" column="4" rowspan="2">
+     <widget class="QListWidget" name="childrenlist"/>
+    </item>
+    <item row="7" column="3" alignment="Qt::AlignRight|Qt::AlignTop">
+     <widget class="QLabel" name="label_children">
+      <property name="text">
+       <string>Children:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="4">
+     <widget class="QLineEdit" name="spouseinfo"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -204,7 +207,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>750</width>
+     <width>727</width>
      <height>21</height>
     </rect>
    </property>
@@ -215,9 +218,6 @@
     <addaction name="actionNew_Family"/>
     <addaction name="actionSave_Family"/>
     <addaction name="actionOpen_Family"/>
-    <addaction name="separator"/>
-    <addaction name="actionMerge_Person"/>
-    <addaction name="actionDelete_Person"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -231,7 +231,17 @@
     <addaction name="separator"/>
     <addaction name="actionUnattach"/>
    </widget>
+   <widget class="QMenu" name="menuPeople">
+    <property name="title">
+     <string>People</string>
+    </property>
+    <addaction name="actionMerge_Person"/>
+    <addaction name="actionDelete_Person"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_Spouse"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuPeople"/>
    <addaction name="menuAttach"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -283,6 +293,11 @@
   <action name="actionUnattach">
    <property name="text">
     <string>Unattach</string>
+   </property>
+  </action>
+  <action name="actionEdit_Spouse">
+   <property name="text">
+    <string>Edit Spouse</string>
    </property>
   </action>
  </widget>
