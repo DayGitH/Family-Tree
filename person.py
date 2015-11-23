@@ -77,12 +77,14 @@ class person():
             
     def display(self):
         print('''ID: {}\nName: {}\nFull Name: {}\nBirthday: {}\nGender: {}\nFather ID: {}\nMother ID: {}\nMarriage: {}\nChildren: {}\nDeath: {}\nImportant: {}\nNotes: {}'''
-              .format(self.id,self.nick_name,self.real_name,self.birth,
-                      self.gender,self.father_id,self.mother_id,self.marriage,
-                      self.children,self.death,self.imp_flg,self.notes))
+              .format(self.id, self.nick_name, self.real_name, self.birth,
+                      self.gender, self.father_id, self.mother_id, self.marriage,
+                      self.children, self.death, self.imp_flg, self.notes))
         
     def fetch(self):
-        return self.nick_name, self.real_name, self.gender, self.bday, self.age, self.marriage, self.children, self.dday, self.imp_flg,self.notes
+        return self.id, self.nick_name, self.real_name, self.bday, \
+               self.gender, self.father_id, self.mother_id, self.marriage, \
+               self.children, self.dday, self.imp_flg, self.notes
     
     def get_father(self):
         return self.father_id
