@@ -225,17 +225,33 @@
     <property name="title">
      <string>Attach</string>
     </property>
-    <addaction name="actionParents"/>
-    <addaction name="actionSpouse"/>
-    <addaction name="actionChildren"/>
+    <widget class="QMenu" name="menuAttach_2">
+     <property name="title">
+      <string>Create</string>
+     </property>
+     <addaction name="actionParents"/>
+     <addaction name="actionSpouse"/>
+     <addaction name="actionChildren"/>
+    </widget>
+    <widget class="QMenu" name="menuUnattach">
+     <property name="title">
+      <string>Unattach</string>
+     </property>
+     <addaction name="actionUnAll"/>
+     <addaction name="separator"/>
+     <addaction name="actionUnParents"/>
+     <addaction name="actionUnSpouse"/>
+     <addaction name="actionUnChild"/>
+    </widget>
+    <addaction name="menuAttach_2"/>
     <addaction name="separator"/>
-    <addaction name="actionUnattach"/>
+    <addaction name="actionAttach"/>
+    <addaction name="menuUnattach"/>
    </widget>
    <widget class="QMenu" name="menuPeople">
     <property name="title">
      <string>People</string>
     </property>
-    <addaction name="actionMerge_Person"/>
     <addaction name="actionDelete_Person"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Spouse"/>
@@ -262,7 +278,7 @@
   </action>
   <action name="actionChildren">
    <property name="text">
-    <string>Children</string>
+    <string>Child</string>
    </property>
   </action>
   <action name="actionDelete_Person">
@@ -290,17 +306,60 @@
     <string>Merge Person</string>
    </property>
   </action>
-  <action name="actionUnattach">
-   <property name="text">
-    <string>Unattach</string>
-   </property>
-  </action>
   <action name="actionEdit_Spouse">
    <property name="text">
     <string>Edit Spouse</string>
    </property>
   </action>
+  <action name="actionUnParents">
+   <property name="text">
+    <string>Parents</string>
+   </property>
+  </action>
+  <action name="actionMother">
+   <property name="text">
+    <string>Mother</string>
+   </property>
+  </action>
+  <action name="actionUnSpouse">
+   <property name="text">
+    <string>Spouse</string>
+   </property>
+  </action>
+  <action name="actionUnChild">
+   <property name="text">
+    <string>Child</string>
+   </property>
+  </action>
+  <action name="actionUnAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionAttach">
+   <property name="text">
+    <string>Attach</string>
+   </property>
+  </action>
  </widget>
+ <tabstops>
+  <tabstop>peoplelist</tabstop>
+  <tabstop>keyEdit</tabstop>
+  <tabstop>nicknameEdit</tabstop>
+  <tabstop>realnameEdit</tabstop>
+  <tabstop>bdayEdit</tabstop>
+  <tabstop>maleRadio</tabstop>
+  <tabstop>femaleRadio</tabstop>
+  <tabstop>ddayRadio</tabstop>
+  <tabstop>ddayEdit</tabstop>
+  <tabstop>impRadio</tabstop>
+  <tabstop>notesEdit</tabstop>
+  <tabstop>spouselist</tabstop>
+  <tabstop>motherButton</tabstop>
+  <tabstop>fatherButton</tabstop>
+  <tabstop>childrenlist</tabstop>
+  <tabstop>spouseinfo</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
