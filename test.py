@@ -17,21 +17,9 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.people = csv_handle.load('Family tree test.csv')
 
         for a in sorted(self.people):
-            self.peoplelist.addItem(a + ' - ' + self.people[a].nick_name)
+            self.peopleList.addItem(a + ' - ' + self.people[a].nick_name)
 
-        self.label_ID.setAlignment(Qt.AlignRight)
-        self.label_bday.setAlignment(Qt.AlignRight)
-        self.label_children.setAlignment(Qt.AlignRight)
-        self.label_dday.setAlignment(Qt.AlignRight)
-        self.label_father.setAlignment(Qt.AlignRight)
-        self.label_gender.setAlignment(Qt.AlignRight)
-        self.label_marriage.setAlignment(Qt.AlignRight)
-        self.label_mother.setAlignment(Qt.AlignRight)
-        self.label_nickname.setAlignment(Qt.AlignRight)
-        self.label_notes.setAlignment(Qt.AlignRight)
-        self.label_realname.setAlignment(Qt.AlignRight)
-
-        self.peoplelist.currentItemChanged.connect(self.select_in_list)
+        self.peopleList.currentItemChanged.connect(self.select_in_list)
         self.spouselist.currentItemChanged.connect(self.marital_info)
         self.nicknameEdit.textChanged.connect(self.update_nick_name)
         self.realnameEdit.editingFinished.connect(self.update_real_name)
@@ -65,16 +53,16 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.fatherButton.setFlat(True)
         self.motherButton.setFlat(True)
 
-        self.peoplelist.setCurrentRow(0)
+        self.peopleList.setCurrentRow(0)
 
     def new_family(self):
         self.people = {}
-        self.peoplelist.clear()
+        self.peopleList.clear()
         k = self.get_next_number()
 
         self.people[k] = person.person(k, '', '', '', 'M', '', '', ['S000'], [], '', '', '')
-        self.peoplelist.addItem(k + ' - ' + self.people[k].nick_name)
-        self.peoplelist.setCurrentRow(0)
+        self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
+        self.peopleList.setCurrentRow(0)
 
     def save_family(self):
         fname, _ = QFileDialog.getSaveFileName(self, 'Save Family File', '.', '*.csv')
@@ -87,11 +75,11 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         # print(fname)
 
         self.people = {}
-        self.peoplelist.clear()
+        self.peopleList.clear()
         self.people = csv_handle.load(fname)
 
         for a in sorted(self.people):
-            self.peoplelist.addItem(a + ' - ' + self.people[a].nick_name)
+            self.peopleList.addItem(a + ' - ' + self.people[a].nick_name)
 
     def select_in_list(self, cur, prev):
         try:
@@ -183,7 +171,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
     def update_nick_name(self):
         nck = self.nicknameEdit.text()
         self.people[self.key].update('nick_name', nck)
-        self.peoplelist.currentItem().setText(self.key + ' - ' + nck)
+        self.peopleList.currentItem().setText(self.key + ' - ' + nck)
 
     def update_real_name(self):
         self.people[self.key].update('real_name', self.realnameEdit.text())
@@ -290,7 +278,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             k = self.get_next_number()
             self.people[k] = person.person(k, '', '', '', 'M', '', '', ['S000'], [self.key], '', '', '')
             self.people[self.key].update('father_id', k)
-            self.peoplelist.addItem(k + ' - ' + self.people[k].nick_name)
+            self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
             father = k
 
         mother = self.people[self.key].mother_id
@@ -298,7 +286,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             k = self.get_next_number()
             self.people[k] = person.person(k, '', '', '', 'F', '', '', ['S000'], [self.key], '', '', '')
             self.people[self.key].update('mother_id', k)
-            self.peoplelist.addItem(k + ' - ' + self.people[k].nick_name)
+            self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
             mother = k
 
         # print(father, mother)
@@ -309,12 +297,12 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         k = self.get_next_number()
         g = 'F' if self.people[self.key].gender == 'M' else 'M'
         self.people[k] = person.person(k, '', '', '', g, '', '', ['M' + self.key], [], '', '', '')
-        self.peoplelist.addItem(k + ' - ' + self.people[k].nick_name)
+        self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
         if self.people[self.key].marriage[0][0] == 'S':
             self.people[self.key].marriage = ['M' + k]
         else:
             self.people[self.key].marriage.append('M' + k)
-        self.peoplelist.setCurrentItem(self.peoplelist.findItems(k + ' - ' + self.people[k].nick_name, Qt.MatchExactly)[0])
+        self.peopleList.setCurrentItem(self.peopleList.findItems(k + ' - ' + self.people[k].nick_name, Qt.MatchExactly)[0])
         self.holder = self.spouse_window()
 
     def create_child(self):
@@ -331,9 +319,9 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                 self.people[self.key].children.append(k)
                 self.people[spouse].children.append(k)
 
-                self.peoplelist.addItem(k + ' - ' + self.people[k].nick_name)
+                self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
 
-                self.peoplelist.setCurrentItem(self.peoplelist.findItems(k + ' - ' + self.people[k].nick_name, Qt.MatchExactly)[0])
+                self.peopleList.setCurrentItem(self.peopleList.findItems(k + ' - ' + self.people[k].nick_name, Qt.MatchExactly)[0])
         except AttributeError:
             pass
 
@@ -444,29 +432,29 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                 elif self.people[self.key].gender == 'F':
                     self.people[child].mother_id = ''
         self.people.pop(self.key)
-        self.peoplelist.takeItem(self.peoplelist.row(self.peoplelist.currentItem()))
+        self.peopleList.takeItem(self.peopleList.row(self.peopleList.currentItem()))
         # print(sorted(self.people.keys()))
 
     def open_father(self):
         try:
-            self.peoplelist.setCurrentItem(self.peoplelist.findItems(self.fatherButton.text(), Qt.MatchExactly)[0])
+            self.peopleList.setCurrentItem(self.peopleList.findItems(self.fatherButton.text(), Qt.MatchExactly)[0])
         except IndexError:
             pass
 
     def open_mother(self):
         try:
-            self.peoplelist.setCurrentItem(self.peoplelist.findItems(self.motherButton.text(), Qt.MatchExactly)[0])
+            self.peopleList.setCurrentItem(self.peopleList.findItems(self.motherButton.text(), Qt.MatchExactly)[0])
         except IndexError:
             pass
 
     def open_spouse(self, item):
         try:
-            self.peoplelist.setCurrentItem(self.peoplelist.findItems(item.text(), Qt.MatchExactly)[0])
+            self.peopleList.setCurrentItem(self.peopleList.findItems(item.text(), Qt.MatchExactly)[0])
         except IndexError:
-            self.peoplelist.setCurrentItem(self.peoplelist.findItems(item.text()[:item.text().index(' (')], Qt.MatchExactly)[0])
+            self.peopleList.setCurrentItem(self.peopleList.findItems(item.text()[:item.text().index(' (')], Qt.MatchExactly)[0])
 
     def open_child(self, item):
-        self.peoplelist.setCurrentItem(self.peoplelist.findItems(item.text(), Qt.MatchExactly)[0])
+        self.peopleList.setCurrentItem(self.peopleList.findItems(item.text(), Qt.MatchExactly)[0])
 
     def marital_info(self, cur, prev):
         months = {'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May',
