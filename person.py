@@ -22,8 +22,8 @@ class person():
     
     age = 100
     
-    def __init__(self,id,nick_name,real_name,bday,gender,father_id,mother_id,
-                 marriage,children,dday,imp_flg,notes):
+    def __init__(self,id,nick_name='',real_name='',bday='',gender='',father_id='',mother_id='',
+                 marriage=['S000'],children=[],dday='',imp_flg='',notes=''):
         self.id = id
         self.nick_name = nick_name
         self.real_name = real_name
