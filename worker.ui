@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
+    <width>923</width>
     <height>556</height>
    </rect>
   </property>
@@ -201,13 +204,20 @@
      </layout>
     </item>
     <item row="3" column="4" rowspan="3">
-     <widget class="QListWidget" name="spouselist"/>
+     <widget class="QListWidget" name="spouseList">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="6" column="4">
-     <widget class="QLineEdit" name="spouseinfo"/>
+     <widget class="QLineEdit" name="spouseInfo"/>
     </item>
     <item row="8" column="4" rowspan="2">
-     <widget class="QListWidget" name="childrenlist"/>
+     <widget class="QListWidget" name="childrenList"/>
     </item>
     <item row="8" column="2" rowspan="2">
      <widget class="QTextEdit" name="notesEdit"/>
@@ -264,24 +274,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QRadioButton" name="maleRadio">
-        <property name="text">
-         <string>Male</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="femaleRadio">
-        <property name="text">
-         <string>Female</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="1" column="4">
      <widget class="QPushButton" name="fatherButton">
       <property name="text">
@@ -334,37 +326,12 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="standardButtons">
-       <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
       </property>
       <property name="centerButtons">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
-    </item>
-    <item row="5" column="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_6">
-      <item>
-       <widget class="QRadioButton" name="secondStatusRadio">
-        <property name="text">
-         <string>Engaged</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="firstStatusRadio">
-        <property name="text">
-         <string>Married</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="thirdStatusRadio">
-        <property name="text">
-         <string>Divorced</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
     <item row="6" column="2">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -587,6 +554,74 @@
       </property>
      </widget>
     </item>
+    <item row="5" column="2">
+     <widget class="QGroupBox" name="groupBox_1">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <item>
+        <widget class="QRadioButton" name="secondStatusRadio">
+         <property name="text">
+          <string>Engaged</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="firstStatusRadio">
+         <property name="text">
+          <string>Single</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="thirdStatusRadio">
+         <property name="text">
+          <string>Divorced</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <item>
+        <widget class="QRadioButton" name="maleRadio">
+         <property name="text">
+          <string>Male</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="femaleRadio">
+         <property name="text">
+          <string>Female</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -594,58 +629,10 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
+     <width>923</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNew_Family"/>
-    <addaction name="actionSave_Family"/>
-    <addaction name="actionOpen_Family"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuAttach">
-    <property name="title">
-     <string>Attach</string>
-    </property>
-    <widget class="QMenu" name="menuAttach_2">
-     <property name="title">
-      <string>Create</string>
-     </property>
-     <addaction name="actionParents"/>
-     <addaction name="actionSpouse"/>
-     <addaction name="actionChildren"/>
-    </widget>
-    <widget class="QMenu" name="menuUnattach">
-     <property name="title">
-      <string>Unattach</string>
-     </property>
-     <addaction name="actionUnAll"/>
-     <addaction name="separator"/>
-     <addaction name="actionUnParents"/>
-     <addaction name="actionUnSpouse"/>
-     <addaction name="actionUnChild"/>
-    </widget>
-    <addaction name="menuAttach_2"/>
-    <addaction name="separator"/>
-    <addaction name="actionAttach"/>
-    <addaction name="menuUnattach"/>
-   </widget>
-   <widget class="QMenu" name="menuPeople">
-    <property name="title">
-     <string>People</string>
-    </property>
-    <addaction name="actionDelete_Person"/>
-    <addaction name="separator"/>
-    <addaction name="actionEdit_Spouse"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuPeople"/>
-   <addaction name="menuAttach"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_Family">
