@@ -3,8 +3,8 @@ from PySide.QtGui import *
 import sys
 import person
 import worker
-import spouse
-import attacher
+# import spouse
+# import attacher
 import csv_handle
 import re
 import datetime
@@ -14,10 +14,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
 
-        self.people = csv_handle.load('Family tree test.csv')
-
-        for a in sorted(self.people):
-            self.peopleList.addItem(a + ' - ' + self.people[a].nick_name)
 
         self.peopleList.currentItemChanged.connect(self.select_in_list)
         self.spouseList.currentItemChanged.connect(self.marital_info)
@@ -55,7 +51,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.secondStatusRadio.toggled.connect(self.update_status)
         self.thirdStatusRadio.toggled.connect(self.update_status)
         self.spouseInfo.editingFinished.connect(self.update_anniversary)
-        self.statusToEdit.editingFinished.connect(self.update_end_marriage)
         self.secondaryList.currentItemChanged.connect(self.select_in_secondary)
         self.saveBox.clicked.connect(self.save_attached)
         self.moveUpSpouse.clicked.connect(self.move_spouse_up)
@@ -70,6 +65,13 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.secondaryList.hide()
         self.secondaryListLabel.hide()
         self.saveBox.hide()
+
+        # self.new_family()
+
+        self.people = csv_handle.load('save4.csv')
+
+        for a in sorted(self.people):
+            self.peopleList.addItem(a + ' - ' + self.people[a].nick_name)
 
         self.peopleList.setCurrentRow(0)
 
@@ -107,7 +109,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             self.key = cur.text()[:3]
             self.spouse = ''
         except AttributeError:
-            print('ass')
+            print('attribute error in select_in_list')
             return
         self.keyEdit.setText(self.key)
         self.nicknameEdit.setText(self.people[self.key].nick_name)
@@ -269,7 +271,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                             pass
                         except:
                             print(sys.exc_info())
-            else:
+            elif n.group():
                 self.people[self.key].update('dday', self.ddayEdit.text())
 
             if self.people[self.key].age > 1:
@@ -344,8 +346,15 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                 elif self.people[self.key].gender == 'F':
                     self.people[k] = person.person(k, gender='F', father_id=spouse, mother_id=self.key)
 
-                self.people[self.key].children.append(k)
-                self.people[spouse].children.append(k)
+                if self.people[self.key].children:
+                    self.people[self.key].children.append(k)
+                else:
+                    self.people[self.key].children = [k]
+
+                if self.people[spouse].children:
+                    self.people[spouse].children.append(k)
+                else:
+                    self.people[spouse].children = [k]
 
                 self.peopleList.addItem(k + ' - ' + self.people[k].nick_name)
 
@@ -375,7 +384,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.motherButton.setEnabled(bool)
         self.spouseList.setEnabled(bool)
         self.spouseInfo.setEnabled(bool)
-        self.statusToEdit.setEnabled(bool)
         self.childrenList.setEnabled(bool)
         self.newFamilyButton.setEnabled(bool)
         self.saveFamilyButton.setEnabled(bool)
@@ -445,7 +453,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.attach = 'spouse'
 
     def attach_child(self):
-        if self.spouseList.currentItem() == None:
+        if not self.spouseList.currentItem():
             return
         elif self.secondStatusRadio.isChecked():
             return
@@ -496,21 +504,36 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                 else:
                     raise Exception('Gender error in attaching parents')
 
-                self.people[parentone].children.append(self.key)
-                self.people[parenttwo].children.append(self.key)
+                if self.people[parentone].children:
+                    self.people[parentone].children.append(self.key)
+                else:
+                    self.people[parentone].children = [self.key]
+
+                if self.people[parenttwo].children:
+                    self.people[parenttwo].children.append(self.key)
+                else:
+                    self.people[parenttwo].children = [self.key]
 
                 self.fatherButton.setText(self.people[self.key].father_id + ' - ' +
                                           self.people[self.people[self.key].father_id].nick_name)
                 self.motherButton.setText(self.people[self.key].mother_id + ' - ' +
                                           self.people[self.people[self.key].mother_id].nick_name)
+
             elif self.attach == 'child':
                 self_gender = self.people[self.key].gender
                 spouse = self.spouseList.currentItem().text()[:3]
                 spouse_gender = self.people[spouse].gender
                 child = self.primaryList.currentItem().text()[:3]
 
-                self.people[self.key].children.append(child)
-                self.people[spouse].children.append(child)
+                if self.people[self.key].children:
+                    self.people[self.key].children.append(child)
+                else:
+                    self.people[self.key].children = [child]
+
+                if self.people[spouse].children:
+                    self.people[spouse].children.append(child)
+                else:
+                    self.people[spouse].children = [child]
 
                 if self_gender == 'M' and spouse_gender == 'F':
                     self.people[child].father_id = self.key
@@ -557,7 +580,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                     m = re.match('^[DM]' + spouse + '[_*a-zA-Z0-9]*', p)
                     mine = m.group()
                     yours = m.group()[0] + self.key + m.group()[4:]
-                    # print(mine, yours)
                     self.people[self.key].marriage.remove(mine)
                     if not self.people[self.key].marriage:
                         self.people[self.key].marriage = 'S000'
@@ -615,6 +637,10 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         self.attacherWindow.show()
 
     def delete_person(self):
+        if len(self.people) < 2:
+            print('Cannot delete last person')
+            return
+
         father = self.people[self.key].father_id
         mother = self.people[self.key].mother_id
         spouse = self.people[self.key].marriage
@@ -625,7 +651,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         if mother:
             self.people[mother].children.remove(self.key)
 
-        if spouse:
+        if spouse != ['S000']:
             for sp in spouse:
                 for m in self.people[sp[1:4]].marriage:
                     if m[1:4] == self.key:
@@ -633,8 +659,7 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                         if self.people[sp[1:4]].marriage == []:
                             self.people[sp[1:4]].marriage = ['S000']
 
-        if children[0]:
-            # print(children)
+        if children:
             for child in children:
                 if self.people[self.key].gender == 'M':
                     self.people[child].father_id = ''
@@ -642,7 +667,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                     self.people[child].mother_id = ''
         self.people.pop(self.key)
         self.peopleList.takeItem(self.peopleList.row(self.peopleList.currentItem()))
-        # print(sorted(self.people.keys()))
 
     def open_father(self):
         try:
@@ -665,6 +689,35 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
     def open_child(self, item):
         self.peopleList.setCurrentItem(self.peopleList.findItems(item.text(), Qt.MatchExactly)[0])
 
+
+    def get_marital_death(self):
+        d1 = self.people[self.key].dday
+        d2 = self.people[self.spouse].dday
+
+        d1 = '' if d1 == '0' else d1
+        d2 = '' if d2 == '0' else d2
+
+        if d1 and not d2:
+            return d1
+        if d2 and not d1:
+            return d2
+        if not d1 and not d2:
+            return ''
+
+        if int(d1[:4]) < int(d2[:4]):
+            return d1
+        if int(d2[:4]) < int(d1[:4]):
+            return d2
+        if int(d1[4:6]) < int(d2[4:6]):
+            return d1
+        if int(d2[4:6]) < int(d1[4:6]):
+            return d2
+        if int(d1[6:]) < int(d2[6:]):
+            return d1
+        if int(d2[6:]) < int(d1[6:]):
+            return d2
+
+
     def marital_info(self, cur, prev):
         months = {'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May',
           '06':'Jun', '07':'Jul', '08':'Aug', '09':'Sep', '10':'Oct',
@@ -677,10 +730,12 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             self.spouse = cur.text()[:3]
         except AttributeError:
             self.spouseInfo.clear()
-            self.statusToEdit.clear()
+            # self.statusToEdit.clear()
             single = True
             status = 'S'
 
+
+        m = d = ''
         for a in self.people[self.key].marriage:
             if a[1:4] == self.spouse:
                 status = a[0]
@@ -688,16 +743,26 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
                     m = a.split('_')[1].split('*')[0]
                 except IndexError:
                     m = ''
-                try:
-                    d = a.split('_')[1].split('*')[1]
-                except IndexError:
-                    d = ''
+                # try:
+                #     d = a.split('_')[1].split('*')[1]
+                # except IndexError:
+                #     d = ''
+        try:
+            d = self.get_marital_death
+        except KeyError as e:
+            if e.args[0] == '':
+                pass
+            else:
+                print("Unexpected error:", sys.exc_info())
+                raise
+
+        print(m,d)
 
         if status == 'S':
             self.firstStatusRadio.setText('Single')
             self.secondStatusRadio.hide()
             self.thirdStatusRadio.hide()
-            self.statusToEdit.setReadOnly(True)
+            # self.statusToEdit.setReadOnly(True)
 
             self.firstStatusRadio.setChecked(True)
         elif status in ['E', 'M', 'D']:
@@ -706,11 +771,6 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             self.thirdStatusRadio.setText('Divorced')
             self.secondStatusRadio.show()
             self.thirdStatusRadio.show()
-
-            if status == 'D':
-                self.statusToEdit.setReadOnly(False)
-            else:
-                self.statusToEdit.setReadOnly(True)
 
             self.firstStatusRadio.setChecked(status == 'M')
             self.secondStatusRadio.setChecked(status == 'E')
@@ -800,16 +860,19 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
         #             p += ' to present'
         if m_out:
             p = m_out
-            if age >= 0:
+            if age >= 0 and status == 'M':
                 p += ' ({} years)'.format(age)
         self.spouseInfo.setText(p)
 
         if d_out:
-            self.statusToEdit.setText(d_out)
+            pass
+            # self.statusToEdit.setText(d_out)
         elif status == 'M' and m_out:
-            self.statusToEdit.setText('present')
+            pass
+            # self.statusToEdit.setText('present')
         else:
-            self.statusToEdit.clear()
+            pass
+            # self.statusToEdit.clear()
 
     def move_spouse_up(self):
         spouse = self.spouseList.currentItem().text()[:3]
@@ -895,15 +958,15 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
     def update_status(self):
         if self.firstStatusRadio.isChecked() and self.sender().text() == 'Married':
             status = 'M'
-            self.statusToEdit.setReadOnly(True)
+            # self.statusToEdit.setReadOnly(True)
         elif self.secondStatusRadio.isChecked() and self.sender().text() == 'Engaged':
             status = 'E'
-            self.statusToEdit.setReadOnly(True)
+            # self.statusToEdit.setReadOnly(True)
         elif self.thirdStatusRadio.isChecked() and self.sender().text() == 'Divorced':
             status = 'D'
-            self.statusToEdit.setReadOnly(False)
+            # self.statusToEdit.setReadOnly(False)
         else:
-            self.statusToEdit.setReadOnly(True)
+            # self.statusToEdit.setReadOnly(True)
             return
 
         for n, p in enumerate(self.people[self.key].marriage):
@@ -1002,8 +1065,10 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
             except AttributeError:
                 pass
 
+        self.marital_info(self.spouseList.currentItem(), None)
+
     def update_end_marriage(self):
-        txt = self.statusToEdit.text()
+        # txt = self.statusToEdit.text()
         formats = ['%Y%m%d', '%Y%m', '%Y']
         m = re.match('^[0-9]{8}$|'
                      '^[0-9]{6}$|'
@@ -1062,403 +1127,403 @@ class MainDialog(QMainWindow, worker.Ui_MainWindow):
     def exitApp(self):
         sys.exit(0)
 
-
-class SpouseDialog(QMainWindow, spouse.Ui_MainWindow):
-    status = ''
-    marriage = ''
-    m_out = ''
-    divorce = ''
-    d_out = ''
-    people = {}
-    key = ''
-    spouse = ''
-
-    months = {'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May',
-          '06':'Jun', '07':'Jul', '08':'Aug', '09':'Sep', '10':'Oct',
-          '11':'Nov', '12':'Dec'}
-
-    def __init__(self, key, spouse, people, parent=None):
-        super().__init__()
-        self.setupUi(self)
-
-        # print(key, spouse, people[key].marriage)
-        self.people = people
-        self.key = key
-        self.spouse = spouse
-        for a in people[key].marriage:
-            if a[1:4] == spouse:
-                self.status = a[0]
-                try:
-                    self.marriage = a.split('_')[1].split('*')[0]
-                except IndexError:
-                    self.marriage = ''
-                try:
-                    self.divorce = a.split('_')[1].split('*')[1]
-                except IndexError:
-                    pass
-                # print(self.marriage)
-
-        # print(self.marriage, self.divorce)
-        self.init_fields()
-
-        self.engagedButton.toggled.connect(self.update_status)
-        self.marriedButton.toggled.connect(self.update_status)
-        self.divorcedButton.toggled.connect(self.update_status)
-
-        self.marriageEdit.editingFinished.connect(self.update_marriage)
-        self.separationEdit.editingFinished.connect(self.update_divorce)
-
-        self.buttonBox.clicked.connect(self.close_spouse_window)
-
-    def init_fields(self):
-        if self.marriage:
-            self.dates()
-        self.engagedButton.setChecked(self.status == 'E')
-        self.marriedButton.setChecked(self.status == 'M')
-        self.divorcedButton.setChecked(self.status == 'D')
-        if self.status != 'D':
-            self.separationEdit.setEnabled(False)
-
-        self.marriageEdit.setText(self.m_out)
-        self.separationEdit.setText(self.d_out)
-
-
-    def dates(self):
-        l = []
-        m_year = ''
-        m_month = ''
-        m_day = ''
-        d_year = ''
-        d_month = ''
-        d_day = ''
-        if len(self.marriage) >= 4 and self.marriage[0:4] != 'xxxx':
-            m_year = int(self.marriage[0:4])
-            l.append(self.marriage[0:4])
-        if len(self.marriage)>= 6:
-            m_month = int(self.marriage[4:6])
-            l.append(self.months[self.marriage[4:6]])
-        if len(self.marriage) >= 8:
-            m_day = int(self.marriage[6:8])
-            l.append(self.marriage[6:8])
-
-        self.m_out = '-'.join(l)
-
-        if self.status == 'D':
-            l = []
-            if len(self.divorce) >= 4:
-                d_year = int(self.divorce[0:4])
-                l.append(self.divorce[0:4])
-            if len(self.divorce)>= 6:
-                d_month = int(self.divorce[4:6])
-                if len(l) == 1:
-                    l.append(self.months[self.divorce[4:6]])
-            if len(self.divorce) >= 8:
-                d_day = int(self.divorce[6:8])
-                if len(l) == 2:
-                    l.append(self.divorce[6:8])
-
-            self.d_out = '-'.join(l)
-
-
-    def update_status(self):
-        if self.engagedButton.isChecked() and self.sender().text() == 'Engaged':
-            self.status = 'E'
-            self.separationEdit.setEnabled(False)
-        elif self.marriedButton.isChecked() and self.sender().text() == 'Married':
-            self.status = 'M'
-            self.separationEdit.setEnabled(False)
-        elif self.divorcedButton.isChecked() and self.sender().text() == 'Divorced':
-            self.status = 'D'
-            self.separationEdit.setEnabled(True)
-        else:
-            pass
-
-    def update_marriage(self):
-        if self.status in ['M', 'D']:
-            formats = ['%Y%m%d', '%Y%m', '%Y', '%m%d']
-            start = self.marriageEdit.text()
-            m = re.match('^[0-9]{8}$|'
-                         '^[0-9]{6}$|'
-                         '^[0-9]{4}$|', start)
-
-            if m:
-                for frmt in formats:
-                    try:
-                        if datetime.datetime.strptime(start, frmt):
-                            self.marriage = start
-                            self.dates()
-                    except ValueError:
-                        pass
-                # for n, p in enumerate(self.people[self.key].marriage):
-                #     m = re.match('^[DMW]' + self.spouse + '[_a-zA-Z0-9]*', p)
-                #     if p == m.group():
-                #         self.people[self.key].marriage[n] = self.status + self.spouse + '_' + txt
-                # print(self.marriageEdit.text(), m.group())
-
-            self.marriageEdit.setText(self.m_out)
-            # self.separationEdit.setText(self.d_out)
-
-
-    def update_divorce(self):
-        if self.status == 'D':
-            formats = ['%Y%m%d', '%Y%m', '%Y', '%m%d']
-            start = self.marriage
-            end = self.separationEdit.text()
-            m = re.match('^[0-9]{8}$|'
-                         '^[0-9]{6}$|'
-                         '^[0-9]{4}$|', start)
-            n = re.match('^[0-9]{8}$|'
-                         '^[0-9]{6}$|'
-                         '^[0-9]{4}$|', end)
-
-            if m and n:
-                for frmt1 in formats:
-                    for frmt2 in formats:
-                        # print(frmt1, frmt2)
-                        try:
-                            if datetime.datetime.strptime(start, frmt1) and datetime.datetime.strptime(end, frmt2):
-
-                                b = datetime.datetime.strptime(start, frmt1)
-                                d = datetime.datetime.strptime(end, frmt2)
-
-                                if b < d:
-                                    self.divorce = end
-                                    self.dates()
-                                else:
-                                    print('invalid')
-                        except ValueError:
-                            pass
-                        except:
-                            print(sys.exc_info())
-
-        # print(self.divorce)
-
-    def close_spouse_window(self, button):
-        # print(self.marriage, self.divorce)
-        if button.text().lower() == 'save':
-            for n, p in enumerate(self.people[self.key].marriage):
-                m = re.match('^[DM]' + self.spouse + '[_*a-zA-Z0-9]*', p)
-                try:
-                    if p == m.group():
-                        self.people[self.key].marriage[n] = self.status + self.spouse
-                        if self.marriage:
-                            self.people[self.key].marriage[n] += '_' + self.marriage
-                        if self.divorce:
-                            self.people[self.key].marriage[n] += '*' + self.divorce
-                except AttributeError:
-                    pass
-                    # print('close_spouse_window attribute error')
-
-            for n, p in enumerate(self.people[self.spouse].marriage):
-                m = re.match('^[DM]' + self.key + '[_*a-zA-Z0-9]*', p)
-                try:
-                    if p == m.group():
-                        self.people[self.spouse].marriage[n] = self.status + self.key
-                        if self.marriage:
-                            self.people[self.spouse].marriage[n] += '_' + self.marriage
-                        if self.divorce:
-                            self.people[self.spouse].marriage[n] += '*' + self.divorce
-                except AttributeError:
-                    pass
-                    # print('close_spouse_window attribute error')
-
-        self.hide()
-
-class AttacherDialog(QMainWindow, attacher.Ui_MainWindow):
-    def __init__(self, key, people, parent=None):
-        super().__init__()
-        self.setupUi(self)
-
-        self.key = key
-        self.people = people
-
-        self.radioSpouse.toggled.connect(self.spouse_mode)
-        self.radioParents.toggled.connect(self.parents_mode)
-        self.radioChild.toggled.connect(self.child_mode)
-
-        self.primarylist.currentItemChanged.connect(self.select_in_list)
-        self.secondarylist.currentItemChanged.connect(self.select_in_second_list)
-
-        self.buttonBox.clicked.connect(self.close_attacher_window)
-
-        self.radioSpouse.setChecked(True)
-
-    def select_in_list(self, cur, prev):
-        if cur:
-            self.key = cur.text()[:3]
-            self.secondarylist.clear()
-
-            if self.radioSpouse.isChecked():
-                gender = 'F' if self.people[self.key].gender == 'M' else 'M'
-                for a in sorted(self.people):
-                    if self.people[a].gender == gender:
-                        self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
-
-                self.secondarylist.setCurrentRow(0)
-
-            if self.radioParents.isChecked():
-                self.secondparentlist.clear()
-                for a in sorted(self.people):
-                    if self.marital_check(a):
-                        self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
-
-                self.secondarylist.setCurrentRow(0)
-
-            if self.radioChild.isChecked():
-                self.spouseList.clear()
-                for a in self.people[self.key].marriage:
-                    if a[0] in ['M', 'D']:
-                        self.spouseList.addItem(a[1:4] + ' - ' + self.people[a[1:4]].nick_name)
-                self.spouseList.setCurrentRow(0)
-
-                self.secondarylist.clear()
-                for a in sorted(self.people):
-                    if not self.people[a].father_id and not self.people[a].mother_id and a != self.key:
-                        self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
-
-    def select_in_second_list(self, cur, prev):
-        if cur:
-            if self.radioParents.isChecked():
-                parent = cur.text()[:3]
-                self.secondparentlist.clear()
-                for a in self.people[parent].marriage:
-                    if a[0] in ['M', 'D']:
-                        self.secondparentlist.addItem(a[1:4] + ' - ' + self.people[a[1:4]].nick_name)
-                self.secondparentlist.setCurrentRow(0)
-
-    def marital_check(self, person):
-        for a in self.people[person].marriage:
-                if a[0] in ['M', 'D']:
-                    return True
-        return False
-
-    def spouse_mode(self):
-        if self.radioSpouse.isChecked() and self.sender().text() == 'Spouse':
-            self.spouselabel.hide()
-            self.spouseList.clear()
-            self.spouseList.hide()
-            self.parentlabel.hide()
-            self.secondparentlist.clear()
-            self.secondparentlist.hide()
-            self.radioEngaged.show()
-            self.radioMarried.show()
-            self.radioDivorced.show()
-            self.relationGroup.setFlat(False)
-
-            self.radioMarried.setChecked(True)
-
-            self.primarylist.clear()
-            for a in sorted(self.people):
-                self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
-
-            self.primarylist.setCurrentRow(0)
-
-    def parents_mode(self):
-        if self.radioParents.isChecked() and self.sender().text() == 'Parents':
-            self.spouselabel.hide()
-            self.spouseList.clear()
-            self.spouseList.hide()
-            self.parentlabel.show()
-            self.secondparentlist.show()
-            self.radioEngaged.hide()
-            self.radioMarried.hide()
-            self.radioDivorced.hide()
-            self.relationGroup.setFlat(True)
-
-            self.primarylist.clear()
-            for a in sorted(self.people):
-                if not (self.people[a].father_id or self.people[a].mother_id):
-                    self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
-            self.primarylist.setCurrentRow(0)
-
-    def child_mode(self):
-        if self.radioChild.isChecked() and self.sender().text() == 'Child':
-            self.spouselabel.show()
-            self.spouseList.show()
-            self.parentlabel.hide()
-            self.secondparentlist.clear()
-            self.secondparentlist.hide()
-            self.radioEngaged.hide()
-            self.radioMarried.hide()
-            self.radioDivorced.hide()
-            self.relationGroup.setFlat(True)
-
-            self.primarylist.clear()
-            for a in sorted(self.people):
-                if self.marital_check(a):
-                    self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
-
-            self.primarylist.setCurrentRow(0)
-
-    def close_attacher_window(self, button):
-        # print(self.marriage, self.divorce)
-        if button.text().lower() == 'ok':
-            if self.radioSpouse.isChecked():
-                if self.radioMarried.isChecked():
-                    status = 'M'
-                elif self.radioEngaged.isChecked():
-                    status = 'E'
-                elif self.radioDivorced.isChecked():
-                    status = 'D'
-                else:
-                    raise Exception('error in getting status for spouse attacher')
-
-                spouse = self.secondarylist.currentItem().text()[:3]
-                if self.people[self.key].marriage[0][0] == 'S':
-                    self.people[self.key].marriage = [status + spouse]
-                else:
-                    self.people[self.key].marriage.append(status + spouse)
-
-                if self.people[spouse].marriage[0][0] == 'S':
-                    self.people[spouse].marriage = [status + self.key]
-                else:
-                    self.people[spouse].marriage.append(status + self.key)
-
-            if self.radioParents.isChecked():
-                parentone = self.secondarylist.currentItem().text()[:3]
-                pone_gender = self.people[parentone].gender
-                parenttwo = self.secondparentlist.currentItem().text()[:3]
-                ptwo_gender = self.people[parenttwo].gender
-
-                if pone_gender == 'M' and ptwo_gender == 'F':
-                    self.people[self.key].father_id = parentone
-                    self.people[self.key].mother_id = parenttwo
-                elif pone_gender == 'F' and ptwo_gender == 'M':
-                    self.people[self.key].mother_id = parentone
-                    self.people[self.key].father_id = parenttwo
-                else:
-                    raise Exception('Gender error in attaching parents')
-
-                self.people[parentone].children.append(self.key)
-                self.people[parenttwo].children.append(self.key)
-
-
-            if self.radioChild.isChecked():
-                self_gender = self.people[self.key].gender
-                spouse = self.spouseList.currentItem().text()[:3]
-                spouse_gender = self.people[spouse].gender
-                child = self.secondarylist.currentItem().text()[:3]
-
-                self.people[self.key].children.append(child)
-                self.people[spouse].children.append(child)
-
-                if self_gender == 'M' and spouse_gender == 'F':
-                    self.people[child].father_id = self.key
-                    self.people[child].mother_id = spouse
-                elif self_gender == 'F' and spouse_gender == 'M':
-                    self.people[child].father_id = spouse
-                    self.people[child].mother_id = self.key
-                else:
-                    raise Exception('Gender error in attaching parents')
-
-        self.hide()
-
-    # def spouse_window(self):
-    #     try:
-    #         self.spouseWindow = SpouseDialog(self.key, self.spouseList.currentItem().text()[:3], self.people)
-    #         self.spouseWindow.show()
-    #     except AttributeError:
-    #         pass
+#
+# class SpouseDialog(QMainWindow, spouse.Ui_MainWindow):
+#     status = ''
+#     marriage = ''
+#     m_out = ''
+#     divorce = ''
+#     d_out = ''
+#     people = {}
+#     key = ''
+#     spouse = ''
+#
+#     months = {'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May',
+#           '06':'Jun', '07':'Jul', '08':'Aug', '09':'Sep', '10':'Oct',
+#           '11':'Nov', '12':'Dec'}
+#
+#     def __init__(self, key, spouse, people, parent=None):
+#         super().__init__()
+#         self.setupUi(self)
+#
+#         # print(key, spouse, people[key].marriage)
+#         self.people = people
+#         self.key = key
+#         self.spouse = spouse
+#         for a in people[key].marriage:
+#             if a[1:4] == spouse:
+#                 self.status = a[0]
+#                 try:
+#                     self.marriage = a.split('_')[1].split('*')[0]
+#                 except IndexError:
+#                     self.marriage = ''
+#                 try:
+#                     self.divorce = a.split('_')[1].split('*')[1]
+#                 except IndexError:
+#                     pass
+#                 # print(self.marriage)
+#
+#         # print(self.marriage, self.divorce)
+#         self.init_fields()
+#
+#         self.engagedButton.toggled.connect(self.update_status)
+#         self.marriedButton.toggled.connect(self.update_status)
+#         self.divorcedButton.toggled.connect(self.update_status)
+#
+#         self.marriageEdit.editingFinished.connect(self.update_marriage)
+#         self.separationEdit.editingFinished.connect(self.update_divorce)
+#
+#         self.buttonBox.clicked.connect(self.close_spouse_window)
+#
+#     def init_fields(self):
+#         if self.marriage:
+#             self.dates()
+#         self.engagedButton.setChecked(self.status == 'E')
+#         self.marriedButton.setChecked(self.status == 'M')
+#         self.divorcedButton.setChecked(self.status == 'D')
+#         if self.status != 'D':
+#             self.separationEdit.setEnabled(False)
+#
+#         self.marriageEdit.setText(self.m_out)
+#         self.separationEdit.setText(self.d_out)
+#
+#
+#     def dates(self):
+#         l = []
+#         m_year = ''
+#         m_month = ''
+#         m_day = ''
+#         d_year = ''
+#         d_month = ''
+#         d_day = ''
+#         if len(self.marriage) >= 4 and self.marriage[0:4] != 'xxxx':
+#             m_year = int(self.marriage[0:4])
+#             l.append(self.marriage[0:4])
+#         if len(self.marriage)>= 6:
+#             m_month = int(self.marriage[4:6])
+#             l.append(self.months[self.marriage[4:6]])
+#         if len(self.marriage) >= 8:
+#             m_day = int(self.marriage[6:8])
+#             l.append(self.marriage[6:8])
+#
+#         self.m_out = '-'.join(l)
+#
+#         if self.status == 'D':
+#             l = []
+#             if len(self.divorce) >= 4:
+#                 d_year = int(self.divorce[0:4])
+#                 l.append(self.divorce[0:4])
+#             if len(self.divorce)>= 6:
+#                 d_month = int(self.divorce[4:6])
+#                 if len(l) == 1:
+#                     l.append(self.months[self.divorce[4:6]])
+#             if len(self.divorce) >= 8:
+#                 d_day = int(self.divorce[6:8])
+#                 if len(l) == 2:
+#                     l.append(self.divorce[6:8])
+#
+#             self.d_out = '-'.join(l)
+#
+#
+#     def update_status(self):
+#         if self.engagedButton.isChecked() and self.sender().text() == 'Engaged':
+#             self.status = 'E'
+#             self.separationEdit.setEnabled(False)
+#         elif self.marriedButton.isChecked() and self.sender().text() == 'Married':
+#             self.status = 'M'
+#             self.separationEdit.setEnabled(False)
+#         elif self.divorcedButton.isChecked() and self.sender().text() == 'Divorced':
+#             self.status = 'D'
+#             self.separationEdit.setEnabled(True)
+#         else:
+#             pass
+#
+#     def update_marriage(self):
+#         if self.status in ['M', 'D']:
+#             formats = ['%Y%m%d', '%Y%m', '%Y', '%m%d']
+#             start = self.marriageEdit.text()
+#             m = re.match('^[0-9]{8}$|'
+#                          '^[0-9]{6}$|'
+#                          '^[0-9]{4}$|', start)
+#
+#             if m:
+#                 for frmt in formats:
+#                     try:
+#                         if datetime.datetime.strptime(start, frmt):
+#                             self.marriage = start
+#                             self.dates()
+#                     except ValueError:
+#                         pass
+#                 # for n, p in enumerate(self.people[self.key].marriage):
+#                 #     m = re.match('^[DMW]' + self.spouse + '[_a-zA-Z0-9]*', p)
+#                 #     if p == m.group():
+#                 #         self.people[self.key].marriage[n] = self.status + self.spouse + '_' + txt
+#                 # print(self.marriageEdit.text(), m.group())
+#
+#             self.marriageEdit.setText(self.m_out)
+#             # self.separationEdit.setText(self.d_out)
+#
+#
+#     def update_divorce(self):
+#         if self.status == 'D':
+#             formats = ['%Y%m%d', '%Y%m', '%Y', '%m%d']
+#             start = self.marriage
+#             end = self.separationEdit.text()
+#             m = re.match('^[0-9]{8}$|'
+#                          '^[0-9]{6}$|'
+#                          '^[0-9]{4}$|', start)
+#             n = re.match('^[0-9]{8}$|'
+#                          '^[0-9]{6}$|'
+#                          '^[0-9]{4}$|', end)
+#
+#             if m and n:
+#                 for frmt1 in formats:
+#                     for frmt2 in formats:
+#                         # print(frmt1, frmt2)
+#                         try:
+#                             if datetime.datetime.strptime(start, frmt1) and datetime.datetime.strptime(end, frmt2):
+#
+#                                 b = datetime.datetime.strptime(start, frmt1)
+#                                 d = datetime.datetime.strptime(end, frmt2)
+#
+#                                 if b < d:
+#                                     self.divorce = end
+#                                     self.dates()
+#                                 else:
+#                                     print('invalid')
+#                         except ValueError:
+#                             pass
+#                         except:
+#                             print(sys.exc_info())
+#
+#         # print(self.divorce)
+#
+#     def close_spouse_window(self, button):
+#         # print(self.marriage, self.divorce)
+#         if button.text().lower() == 'save':
+#             for n, p in enumerate(self.people[self.key].marriage):
+#                 m = re.match('^[DM]' + self.spouse + '[_*a-zA-Z0-9]*', p)
+#                 try:
+#                     if p == m.group():
+#                         self.people[self.key].marriage[n] = self.status + self.spouse
+#                         if self.marriage:
+#                             self.people[self.key].marriage[n] += '_' + self.marriage
+#                         if self.divorce:
+#                             self.people[self.key].marriage[n] += '*' + self.divorce
+#                 except AttributeError:
+#                     pass
+#                     # print('close_spouse_window attribute error')
+#
+#             for n, p in enumerate(self.people[self.spouse].marriage):
+#                 m = re.match('^[DM]' + self.key + '[_*a-zA-Z0-9]*', p)
+#                 try:
+#                     if p == m.group():
+#                         self.people[self.spouse].marriage[n] = self.status + self.key
+#                         if self.marriage:
+#                             self.people[self.spouse].marriage[n] += '_' + self.marriage
+#                         if self.divorce:
+#                             self.people[self.spouse].marriage[n] += '*' + self.divorce
+#                 except AttributeError:
+#                     pass
+#                     # print('close_spouse_window attribute error')
+#
+#         self.hide()
+#
+# class AttacherDialog(QMainWindow, attacher.Ui_MainWindow):
+#     def __init__(self, key, people, parent=None):
+#         super().__init__()
+#         self.setupUi(self)
+#
+#         self.key = key
+#         self.people = people
+#
+#         self.radioSpouse.toggled.connect(self.spouse_mode)
+#         self.radioParents.toggled.connect(self.parents_mode)
+#         self.radioChild.toggled.connect(self.child_mode)
+#
+#         self.primarylist.currentItemChanged.connect(self.select_in_list)
+#         self.secondarylist.currentItemChanged.connect(self.select_in_second_list)
+#
+#         self.buttonBox.clicked.connect(self.close_attacher_window)
+#
+#         self.radioSpouse.setChecked(True)
+#
+#     def select_in_list(self, cur, prev):
+#         if cur:
+#             self.key = cur.text()[:3]
+#             self.secondarylist.clear()
+#
+#             if self.radioSpouse.isChecked():
+#                 gender = 'F' if self.people[self.key].gender == 'M' else 'M'
+#                 for a in sorted(self.people):
+#                     if self.people[a].gender == gender:
+#                         self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#
+#                 self.secondarylist.setCurrentRow(0)
+#
+#             if self.radioParents.isChecked():
+#                 self.secondparentlist.clear()
+#                 for a in sorted(self.people):
+#                     if self.marital_check(a):
+#                         self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#
+#                 self.secondarylist.setCurrentRow(0)
+#
+#             if self.radioChild.isChecked():
+#                 self.spouseList.clear()
+#                 for a in self.people[self.key].marriage:
+#                     if a[0] in ['M', 'D']:
+#                         self.spouseList.addItem(a[1:4] + ' - ' + self.people[a[1:4]].nick_name)
+#                 self.spouseList.setCurrentRow(0)
+#
+#                 self.secondarylist.clear()
+#                 for a in sorted(self.people):
+#                     if not self.people[a].father_id and not self.people[a].mother_id and a != self.key:
+#                         self.secondarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#
+#     def select_in_second_list(self, cur, prev):
+#         if cur:
+#             if self.radioParents.isChecked():
+#                 parent = cur.text()[:3]
+#                 self.secondparentlist.clear()
+#                 for a in self.people[parent].marriage:
+#                     if a[0] in ['M', 'D']:
+#                         self.secondparentlist.addItem(a[1:4] + ' - ' + self.people[a[1:4]].nick_name)
+#                 self.secondparentlist.setCurrentRow(0)
+#
+#     def marital_check(self, person):
+#         for a in self.people[person].marriage:
+#                 if a[0] in ['M', 'D']:
+#                     return True
+#         return False
+#
+#     def spouse_mode(self):
+#         if self.radioSpouse.isChecked() and self.sender().text() == 'Spouse':
+#             self.spouselabel.hide()
+#             self.spouseList.clear()
+#             self.spouseList.hide()
+#             self.parentlabel.hide()
+#             self.secondparentlist.clear()
+#             self.secondparentlist.hide()
+#             self.radioEngaged.show()
+#             self.radioMarried.show()
+#             self.radioDivorced.show()
+#             self.relationGroup.setFlat(False)
+#
+#             self.radioMarried.setChecked(True)
+#
+#             self.primarylist.clear()
+#             for a in sorted(self.people):
+#                 self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#
+#             self.primarylist.setCurrentRow(0)
+#
+#     def parents_mode(self):
+#         if self.radioParents.isChecked() and self.sender().text() == 'Parents':
+#             self.spouselabel.hide()
+#             self.spouseList.clear()
+#             self.spouseList.hide()
+#             self.parentlabel.show()
+#             self.secondparentlist.show()
+#             self.radioEngaged.hide()
+#             self.radioMarried.hide()
+#             self.radioDivorced.hide()
+#             self.relationGroup.setFlat(True)
+#
+#             self.primarylist.clear()
+#             for a in sorted(self.people):
+#                 if not (self.people[a].father_id or self.people[a].mother_id):
+#                     self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#             self.primarylist.setCurrentRow(0)
+#
+#     def child_mode(self):
+#         if self.radioChild.isChecked() and self.sender().text() == 'Child':
+#             self.spouselabel.show()
+#             self.spouseList.show()
+#             self.parentlabel.hide()
+#             self.secondparentlist.clear()
+#             self.secondparentlist.hide()
+#             self.radioEngaged.hide()
+#             self.radioMarried.hide()
+#             self.radioDivorced.hide()
+#             self.relationGroup.setFlat(True)
+#
+#             self.primarylist.clear()
+#             for a in sorted(self.people):
+#                 if self.marital_check(a):
+#                     self.primarylist.addItem(a + ' - ' + self.people[a].nick_name)
+#
+#             self.primarylist.setCurrentRow(0)
+#
+#     def close_attacher_window(self, button):
+#         # print(self.marriage, self.divorce)
+#         if button.text().lower() == 'ok':
+#             if self.radioSpouse.isChecked():
+#                 if self.radioMarried.isChecked():
+#                     status = 'M'
+#                 elif self.radioEngaged.isChecked():
+#                     status = 'E'
+#                 elif self.radioDivorced.isChecked():
+#                     status = 'D'
+#                 else:
+#                     raise Exception('error in getting status for spouse attacher')
+#
+#                 spouse = self.secondarylist.currentItem().text()[:3]
+#                 if self.people[self.key].marriage[0][0] == 'S':
+#                     self.people[self.key].marriage = [status + spouse]
+#                 else:
+#                     self.people[self.key].marriage.append(status + spouse)
+#
+#                 if self.people[spouse].marriage[0][0] == 'S':
+#                     self.people[spouse].marriage = [status + self.key]
+#                 else:
+#                     self.people[spouse].marriage.append(status + self.key)
+#
+#             if self.radioParents.isChecked():
+#                 parentone = self.secondarylist.currentItem().text()[:3]
+#                 pone_gender = self.people[parentone].gender
+#                 parenttwo = self.secondparentlist.currentItem().text()[:3]
+#                 ptwo_gender = self.people[parenttwo].gender
+#
+#                 if pone_gender == 'M' and ptwo_gender == 'F':
+#                     self.people[self.key].father_id = parentone
+#                     self.people[self.key].mother_id = parenttwo
+#                 elif pone_gender == 'F' and ptwo_gender == 'M':
+#                     self.people[self.key].mother_id = parentone
+#                     self.people[self.key].father_id = parenttwo
+#                 else:
+#                     raise Exception('Gender error in attaching parents')
+#
+#                 self.people[parentone].children.append(self.key)
+#                 self.people[parenttwo].children.append(self.key)
+#
+#
+#             if self.radioChild.isChecked():
+#                 self_gender = self.people[self.key].gender
+#                 spouse = self.spouseList.currentItem().text()[:3]
+#                 spouse_gender = self.people[spouse].gender
+#                 child = self.secondarylist.currentItem().text()[:3]
+#
+#                 self.people[self.key].children.append(child)
+#                 self.people[spouse].children.append(child)
+#
+#                 if self_gender == 'M' and spouse_gender == 'F':
+#                     self.people[child].father_id = self.key
+#                     self.people[child].mother_id = spouse
+#                 elif self_gender == 'F' and spouse_gender == 'M':
+#                     self.people[child].father_id = spouse
+#                     self.people[child].mother_id = self.key
+#                 else:
+#                     raise Exception('Gender error in attaching parents')
+#
+#         self.hide()
+#
+#     # def spouse_window(self):
+#     #     try:
+#     #         self.spouseWindow = SpouseDialog(self.key, self.spouseList.currentItem().text()[:3], self.people)
+#     #         self.spouseWindow.show()
+#     #     except AttributeError:
+#     #         pass
 
 
 def main():
